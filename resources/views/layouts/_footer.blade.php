@@ -1,4 +1,4 @@
-<div class="col-12">
+<div class="col-md-12">
     <footer class="footer">
         <small class="slogon">
             <span class="glyphicon glyphicon-bookmark" style="color: rgb(94, 77, 240);"></span>
