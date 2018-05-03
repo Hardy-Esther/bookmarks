@@ -13,7 +13,20 @@
                     </section>
                 </div>
             </div>
+
+            <div class="col-md-12">
+                @if (count($bookmarks) > 0)
+                    <ol class="statuses">
+                        @foreach ($bookmarks as $bookmark)
+                            @include('bookmarks._bookmark')
+                        @endforeach
+                    </ol>
+                    {!! $bookmarks->render() !!}
+                @endif
+            </div>
+
         </div>
+
     </div>
 
 @stop

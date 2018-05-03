@@ -48,4 +48,8 @@ class User extends Authenticatable
         $this->notify(new ResetPassword($token));
     }
 
+    public function bookmarks()
+    {
+        return $this->hasMany(Bookmark::class);
+    }
 }
