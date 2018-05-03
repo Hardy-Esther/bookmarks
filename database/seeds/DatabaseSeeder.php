@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call(BookmarksTableSeeder::class);
 
+        $this->call(FollowsTableSeeder::class);
+
         Model::reguard();
     }
 }
