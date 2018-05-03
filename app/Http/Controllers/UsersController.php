@@ -9,9 +9,16 @@ use Illuminate\Support\Facades\Mail;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', [
+            'except' => ['show', 'create', 'store', 'index', 'confirmEmail'],
+        ]);
+    }
+
     public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
+        $users = User::paginate(10);
         return view('users.index', compact('users'));
     }
 
@@ -51,13 +58,11 @@ class UsersController extends Controller
     {
         $view    = 'emails.confirm';
         $data    = compact('user');
-        $from    = 'aufree@yousails.com';
-        $name    = 'Aufree';
         $to      = $user->email;
         $subject = "感谢注册 Bookmarks 应用！请确认你的邮箱。";
 
-        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
-            $message->from($from, $name)->to($to)->subject($subject);
+        Mail::send($view, $data, function ($message) use ($to, $subject) {
+            $message->to($to)->subject($subject);
         });
     }
 
@@ -72,5 +77,43 @@ class UsersController extends Controller
         Auth::login($user);
         session()->flash('success', '恭喜你，激活成功！');
         return redirect()->route('users.show', [$user]);
+    }
+
+    public function edit(User $user)
+    {
+        return view('users.edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $this->validate($request, [
+            'name'     => 'required|max:50',
+            'password' => 'nullable|confirmed|min:6',
+        ]);
+
+        //判断是否是自己的用户，是自己的可以修改，否则拒绝更改 policy 权限判断
+        $this->authorize('update', $user);
+
+        $data         = [];
+        $data['name'] = $request->name;
+        if ($request->password) {
+            $data['password'] = bcrypt($request->password);
+        }
+        $user->update($data);
+
+        session()->flash('success', '个人资料更新成功！');
+
+        return redirect()->route('users.show', $user->id);
+    }
+
+    public function destroy(User $user)
+    {
+        //先检查有没有Policy权限
+        $this->authorize('destroy', $user);
+
+        $user->delete();
+        session()->flash('success', '成功删除用户！');
+
+        return back();
     }
 }
