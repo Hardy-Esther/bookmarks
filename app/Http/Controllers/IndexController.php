@@ -19,4 +19,14 @@ class IndexController extends Controller
 
         return view('index.index',compact('feed_items'));
     }
+
+    public function about()
+    {
+        return view('index.about');
+    }
+
+    public function help()
+    {
+        return view('index.help');
+    }
 }
